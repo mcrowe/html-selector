@@ -8,7 +8,7 @@
   },
   "description": "Select sections of html",
   "dependencies": {
-
+    "htmlparser2": "^3.9.2"
   },
   "devDependencies": {
     "@types/node": "^7.0.12",
