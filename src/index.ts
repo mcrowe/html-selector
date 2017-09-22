@@ -1,9 +1,6 @@
 import * as htmlparser from 'htmlparser2'
 import * as Selector from './selector'
 import * as Tag from './tag'
-import {
-  ISelector
-} from './types'
 
 
 export interface IMap<T> {
@@ -22,15 +19,11 @@ const OPTIONS = {
 }
 
 
-export function select(html: string, selectorStrings: IMap<string>): IMap<string[]> {
+export function select(html: string, selectorStrings: string[]): IMap<string[]> {
 
   const map: IMap<IState[]> = {}
 
-  const selectors: IMap<ISelector> = {}
-
-  for (let key in selectorStrings) {
-    selectors[key] = Selector.make(selectorStrings[key])
-  }
+  const selectors = selectorStrings.map(Selector.make)
 
   const parser = new htmlparser.Parser({
 
@@ -51,8 +44,10 @@ export function select(html: string, selectorStrings: IMap<string>): IMap<string
         }
       }
 
-      for (let key in selectors) {
-        if (Selector.isMatch(selectors[key], tag)) {
+      for (let i = 0; i < selectors.length; i++) {
+        if (Selector.isMatch(selectors[i], tag)) {
+          const key = selectorStrings[i]
+
           if (!map[key]) {
             map[key] = []
           }

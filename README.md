@@ -11,23 +11,23 @@ import HtmlSelector from '@mcrowe/html-selector'
 
 const html = `<body><div></div><div id="rank">def<span>abc</span></div><div><section id="rank">toy<img class="my-image" src="hello" /> 123 </section></div></body>`
 
-const result = select(html, {
-  rank: '#rank',
-  span: 'span',
-  image: '.my-image'
-})
+const result = select(html, [
+  '#rank',
+  'span',
+  '.my-image'
+])
 
 // =>
 
 {
-  rank: [
+  '#rank': [
     '<div id="rank">def<span>abc</span></div>',
     '<section id="rank">toy<img class="my-image" src="hello"></img> 123 </section>'
   ],
-  span: [
+  'span': [
     '<span>abc</span>'
   ],
-  image: [
+  '.my-image': [
     '<img class="my-image" src="hello"></img>'
   ]
 }

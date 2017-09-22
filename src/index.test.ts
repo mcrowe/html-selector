@@ -6,21 +6,21 @@ import { select } from './index'
 test('select', t => {
   const html = `<body><div></div><div id="rank">def<span>abc</span></div><div><section id="rank">toy<img class="my-image" src="hello" /> 123 </section></div></body>`
 
-  const result = select(html, {
-    rank: '#rank',
-    span: 'span',
-    image: '.my-image'
-  })
+  const result = select(html, [
+    '#rank',
+    'span',
+    '.my-image'
+  ])
 
   t.deepEqual(result, {
-    rank: [
+    '#rank': [
       '<div id="rank">def<span>abc</span></div>',
       '<section id="rank">toy<img class="my-image" src="hello"></img> 123 </section>'
     ],
-    span: [
+    'span': [
       '<span>abc</span>'
     ],
-    image: [
+    '.my-image': [
       '<img class="my-image" src="hello"></img>'
     ]
   })
@@ -30,20 +30,20 @@ test('select', t => {
 test('select with complex selectors', t => {
   const html = `<div id="one" class="green">A</div><div id="one" class="blue"></div><span id="two" class="red"></span>`
 
-  const result = select(html, {
-    a: 'div#one.green',
-    b: '#one.blue',
-    c: 'span.red'
-  })
+  const result = select(html, [
+    'div#one.green',
+    '#one.blue',
+    'span.red'
+  ])
 
   t.deepEqual(result, {
-    a: [
+    'div#one.green': [
       '<div id="one" class="green">A</div>'
     ],
-    b: [
+    '#one.blue': [
       '<div id="one" class="blue"></div>'
     ],
-    c: [
+    'span.red': [
       '<span id="two" class="red"></span>'
     ]
   })
@@ -82,7 +82,7 @@ test('select performance', t => {
   const t0 = Date.now()
 
   for (let i = 0; i < 10; i++) {
-    select(html, keyMap(selectors))
+    select(html, selectors)
   }
 
   const dt = Date.now() - t0
@@ -94,14 +94,3 @@ test('select performance', t => {
   )
 
 })
-
-
-function keyMap(values: string[]) {
-  const res = {}
-
-  for (let value of values) {
-    res[value] = value
-  }
-
-  return res
-}
