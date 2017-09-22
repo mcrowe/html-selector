@@ -1,4 +1,5 @@
 import test from 'ava'
+import * as fs from 'fs'
 import { select } from './index'
 
 
@@ -47,3 +48,60 @@ test('select with complex selectors', t => {
     ]
   })
 })
+
+
+test('select performance', t => {
+  const html = fs.readFileSync(__dirname + '/../fixtures/big.html', {encoding: 'utf8'})
+
+  const selectors = [
+    '#SalesRank',
+    '#prodDetails',
+    '#actualPriceValue',
+    '#priceblock_ourprice',
+    '#priceblock_saleprice',
+    '#priceBlock',
+    '#buyNewSection',
+    '#priceblock_dealprice',
+    '#prerderDelaySection',
+    '#mocaSubtotal',
+    '#tmmSwatches',
+    '#mediaTab_content_landing',
+    '#unqualifiedBuyBox',
+    '#averageCustomerReviews',
+    '.reviewCountTextLinkedHistogram',
+    '#merchant-info',
+    '#availability_feature_div',
+    '#mocaBBSoldByAndShipsFrom',
+    '#olp_feature_div',
+    '#moreBuyingChoices_feature_div',
+    '#usedbuyBox',
+    'a.a-link-normal.contributorNameID',
+    '.author'
+  ]
+
+  const t0 = Date.now()
+
+  for (let i = 0; i < 10; i++) {
+    select(html, keyMap(selectors))
+  }
+
+  const dt = Date.now() - t0
+
+  t.is(
+    dt < 750,
+    true,
+    `Expected to select in less than 750ms, but took ${dt}ms.`
+  )
+
+})
+
+
+function keyMap(values: string[]) {
+  const res = {}
+
+  for (let value of values) {
+    res[value] = value
+  }
+
+  return res
+}

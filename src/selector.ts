@@ -4,12 +4,12 @@ import {
 } from './types'
 
 
-export function parse(selector: string): ISelector {
+export function make(selectorString: string): ISelector {
   let type = 'tag'
 
   const result: ISelector = {}
 
-  for (let c of selector) {
+  for (let c of selectorString) {
 
     if (c == '#') {
       type = 'id'
@@ -32,21 +32,18 @@ export function parse(selector: string): ISelector {
 }
 
 
-export function isMatch(selector: string, tag: ITag): boolean {
-  const sel = parse(selector)
-
-  if (sel.id && sel.id != tag.attr.id) {
+export function isMatch(selector: ISelector, tag: ITag): boolean {
+  if (selector.id && selector.id != tag.attr.id) {
     return false
   }
 
-  if (sel.class && sel.class != tag.attr.class) {
+  if (selector.class && selector.class != tag.attr.class) {
     return false
   }
 
-  if (sel.tag && sel.tag != tag.name) {
+  if (selector.tag && selector.tag != tag.name) {
     return false
   }
 
   return true
-
 }

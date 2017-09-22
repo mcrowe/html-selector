@@ -1,26 +1,26 @@
 import test from 'ava'
-import { parse, isMatch } from './selector'
+import { make, isMatch } from './selector'
 import * as Tag from './tag'
 
 
-test('parse', t => {
+test('make', t => {
 
   t.deepEqual(
-    parse('span'),
+    make('span'),
     {
       tag: 'span'
     }
   )
 
   t.deepEqual(
-    parse('#span'),
+    make('#span'),
     {
       id: 'span'
     }
   )
 
   t.deepEqual(
-    parse('span#one.blue'),
+    make('span#one.blue'),
     {
       tag: 'span',
       id: 'one',
@@ -35,7 +35,7 @@ test('isMatch', t => {
 
   t.is(
     isMatch(
-      '.blue',
+      make('.blue'),
       Tag.make('div', {class: 'blue'})
     ),
     true
@@ -43,7 +43,7 @@ test('isMatch', t => {
 
   t.is(
     isMatch(
-      'span#one',
+      make('span#one'),
       Tag.make('div', {id: 'one'})
     ),
     false
@@ -51,7 +51,7 @@ test('isMatch', t => {
 
   t.is(
     isMatch(
-      '#one.green',
+      make('#one.green'),
       Tag.make('div', {id: 'one', class: 'green'})
     ),
     true
