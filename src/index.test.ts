@@ -24,3 +24,26 @@ test('select', t => {
     ]
   })
 })
+
+
+test('select with complex selectors', t => {
+  const html = `<div id="one" class="green">A</div><div id="one" class="blue"></div><span id="two" class="red"></span>`
+
+  const result = select(html, {
+    a: 'div#one.green',
+    b: '#one.blue',
+    c: 'span.red'
+  })
+
+  t.deepEqual(result, {
+    a: [
+      '<div id="one" class="green">A</div>'
+    ],
+    b: [
+      '<div id="one" class="blue"></div>'
+    ],
+    c: [
+      '<span id="two" class="red"></span>'
+    ]
+  })
+})

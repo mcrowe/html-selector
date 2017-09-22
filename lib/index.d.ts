@@ -1,7 +1,3 @@
-export interface IState {
-    level: number;
-    body: string;
-}
 export interface IMap<T> {
     [key: string]: T;
 }

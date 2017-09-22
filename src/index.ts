@@ -1,10 +1,6 @@
 import * as htmlparser from 'htmlparser2'
-
-
-export interface IState {
-  level: number
-  body: string
-}
+import * as Selector from './selector'
+import * as Tag from './tag'
 
 
 export interface IMap<T> {
@@ -12,7 +8,10 @@ export interface IMap<T> {
 }
 
 
-type IAttributes = any
+interface IState {
+  level: number
+  body: string
+}
 
 
 const OPTIONS = {
@@ -27,6 +26,8 @@ export function select(html: string, selectors: IMap<string>): IMap<string[]> {
   const parser = new htmlparser.Parser({
 
     onopentag(name: string, attr: any) {
+      const tag = Tag.make(name, attr)
+
       for (let key in map) {
         for (let state of map[key]) {
           if (state.level > 0) {
@@ -34,20 +35,20 @@ export function select(html: string, selectors: IMap<string>): IMap<string[]> {
           }
 
           if (state.level > 0) {
-            state.body += makeTag(name, attr, false)
+            state.body += Tag.toString(tag)
           }
         }
       }
 
       for (let key in selectors) {
-        if (isSelectorMatch(selectors[key], name, attr)) {
+        if (Selector.isMatch(selectors[key], tag)) {
           if (!map[key]) {
             map[key] = []
           }
 
           const state = {
             level: 1,
-            body: makeTag(name, attr, false)
+            body: Tag.toString(tag)
           }
           map[key].push(state)
         }
@@ -66,12 +67,14 @@ export function select(html: string, selectors: IMap<string>): IMap<string[]> {
     },
 
     onclosetag(name: string) {
+      const tag = Tag.make(name, {}, true)
+
       for (let key in map) {
         for (let state of map[key]) {
           state.level -= 1
 
           if (state.level >= 0) {
-            state.body += makeTag(name, {}, true)
+            state.body += Tag.toString(tag)
           }
         }
       }
@@ -89,40 +92,4 @@ export function select(html: string, selectors: IMap<string>): IMap<string[]> {
   }
 
   return res
-}
-
-
-function isSelectorMatch(selector: string, name: string, attr: IAttributes): boolean {
-  if (selector[0] == '#') {
-    const id = selector.slice(1)
-    return id == attr.id
-  }
-
-  if (selector[0] == '.') {
-    const className = selector.slice(1)
-    return className == attr.class
-  }
-
-  return name == selector
-}
-
-
-function makeTag(name: string, attr: IAttributes, isClosing: boolean): string {
-  let str = ''
-
-  if (isClosing) {
-    str += '</'
-  } else {
-    str += '<'
-  }
-
-  str += name
-
-  for (let key in attr) {
-    str += ` ${key}="${attr[key]}"`
-  }
-
-  str += '>'
-
-  return str
 }
