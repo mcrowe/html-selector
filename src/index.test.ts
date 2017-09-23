@@ -76,12 +76,23 @@ test('select performance', t => {
     '#moreBuyingChoices_feature_div',
     '#usedbuyBox',
     'a.a-link-normal.contributorNameID',
-    '.author'
+    '.author',
+    '#twister',
+    '#gd-customizations-link',
+    '#acrCustomerWriteReviewLink',
+    '#acrCustomerReviewText',
+    '#reviewLink',
+    '.a-color-price',
+    'ul.zg_hrsr',
+    '.prodDetSectionEntry',
+    '#regularprice_savings',
+    '#regularprice_savings_value',
+    '#askATFLink'
   ]
 
   const t0 = Date.now()
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100; i++) {
     select(html, selectors)
   }
 

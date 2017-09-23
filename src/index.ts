@@ -25,26 +25,26 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
 
   const selectors = selectorStrings.map(Selector.make)
 
+  const activeStates = new Set<IState>()
+
+  const nSelectors = selectors.length
+
   const parser = new htmlparser.Parser({
 
     onopentag(name: string, attr: any) {
-
       const tag = Tag.make(name, attr)
 
-      for (let key in map) {
-        for (let state of map[key]) {
+      for (const state of activeStates) {
+        if (state.level > 0) {
+          state.level += 1
+        }
 
-          if (state.level > 0) {
-            state.level += 1
-          }
-
-          if (state.level > 0) {
-            state.body += Tag.toString(tag)
-          }
+        if (state.level > 0) {
+          state.body += Tag.toString(tag)
         }
       }
 
-      for (let i = 0; i < selectors.length; i++) {
+      for (let i = 0; i < nSelectors; i++) {
         if (Selector.isMatch(selectors[i], tag)) {
           const key = selectorStrings[i]
 
@@ -57,30 +57,27 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
             body: Tag.toString(tag)
           }
           map[key].push(state)
+
+          activeStates.add(state)
         }
       }
 
     },
 
     ontext(text: string) {
-      for (let key in map) {
-        for (let state of map[key]) {
-          if (state.level > 0) {
-            state.body += text
-          }
-        }
+      for (const state of activeStates) {
+        state.body += text
       }
     },
 
     onclosetag(name: string) {
-      for (let key in map) {
-        for (let state of map[key]) {
-          state.level -= 1
+      for (const state of activeStates) {
+        const tag = Tag.make(name, {}, true)
+        state.body += Tag.toString(tag)
+        state.level -= 1
 
-          if (state.level >= 0) {
-            const tag = Tag.make(name, {}, true)
-            state.body += Tag.toString(tag)
-          }
+        if (state.level < 1) {
+          activeStates.delete(state)
         }
       }
     }
