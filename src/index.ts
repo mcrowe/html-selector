@@ -32,7 +32,7 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
   const parser = new htmlparser.Parser({
 
     onopentag(name: string, attr: any) {
-      const tag = Tag.make(name, attr)
+      // const tag = Tag.make(name, attr)
 
       for (const state of activeStates) {
         if (state.level > 0) {
@@ -40,12 +40,12 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
         }
 
         if (state.level > 0) {
-          state.body += Tag.toString(tag)
+          state.body += Tag.toString(name, attr)
         }
       }
 
       for (let i = 0; i < nSelectors; i++) {
-        if (Selector.isMatch(selectors[i], tag)) {
+        if (Selector.isMatch(selectors[i], name, attr)) {
           const key = selectorStrings[i]
 
           if (!map[key]) {
@@ -54,7 +54,7 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
 
           const state = {
             level: 1,
-            body: Tag.toString(tag)
+            body: Tag.toString(name, attr)
           }
           map[key].push(state)
 
@@ -72,8 +72,8 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
 
     onclosetag(name: string) {
       for (const state of activeStates) {
-        const tag = Tag.make(name, {}, true)
-        state.body += Tag.toString(tag)
+        // const tag = Tag.make(name, {}, true)
+        state.body += Tag.toString(name, {})
         state.level -= 1
 
         if (state.level < 1) {

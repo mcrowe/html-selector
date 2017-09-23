@@ -13,19 +13,19 @@ export function make(name: string, attr: IAttributes, isClosing: boolean = false
 }
 
 
-export function toString(tag: ITag): string {
+export function toString(name: string, attr: IAttributes, isClosing: boolean = false): string {
   let str = ''
 
-  if (tag.isClosing) {
+  if (isClosing) {
     str += '</'
   } else {
     str += '<'
   }
 
-  str += tag.name
+  str += name
 
-  for (let key in tag.attr) {
-    str += ` ${key}="${tag.attr[key]}"`
+  for (let key in attr) {
+    str += ` ${key}="${attr[key]}"`
   }
 
   str += '>'

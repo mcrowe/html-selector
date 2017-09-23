@@ -32,16 +32,16 @@ export function make(selectorString: string): ISelector {
 }
 
 
-export function isMatch(selector: ISelector, tag: ITag): boolean {
-  if (selector.id && selector.id != tag.attr.id) {
+export function isMatch(selector: ISelector, name: string, attr: any): boolean {
+  if (selector.id && selector.id != attr.id) {
     return false
   }
 
-  if (selector.class && selector.class != tag.attr.class) {
+  if (selector.class && selector.class != attr.class) {
     return false
   }
 
-  if (selector.tag && selector.tag != tag.name) {
+  if (selector.tag && selector.tag != name) {
     return false
   }
 
