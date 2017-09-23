@@ -23,30 +23,50 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
 
   const map: IMap<IState[]> = {}
 
-  const selectors = selectorStrings.map(Selector.make)
+  const selectors = selectorStrings.map(string => ({
+    string,
+    selector: Selector.make(string)
+  }))
+
+
+  const nonIdSelectors = selectors.filter(s => !s.selector.id)
+  const tagSelectors = nonIdSelectors.filter(s => !s.selector.class)
 
   const activeStates = new Set<IState>()
 
-  const nSelectors = selectors.length
+  let isSkipped = false
 
   const parser = new htmlparser.Parser({
 
     onopentag(name: string, attr: any) {
-      // const tag = Tag.make(name, attr)
+      if (name == 'script' || name == 'style') {
+        isSkipped = true
+        return
+      }
 
-      for (const state of activeStates) {
-        if (state.level > 0) {
-          state.level += 1
-        }
+      if (activeStates.size > 0) { // performance optimization
+        for (const state of activeStates) {
+          if (state.level > 0) {
+            state.level += 1
+          }
 
-        if (state.level > 0) {
-          state.body += Tag.toString(name, attr)
+          if (state.level > 0) {
+            state.body += Tag.toString(name, attr)
+          }
         }
       }
 
-      for (let i = 0; i < nSelectors; i++) {
-        if (Selector.isMatch(selectors[i], name, attr)) {
-          const key = selectorStrings[i]
+      let selectorsToCheck
+      if (!attr.id) {
+        selectorsToCheck = !attr.class ? tagSelectors : nonIdSelectors
+      } else {
+        selectorsToCheck = selectors
+      }
+
+      for (let i = 0; i < selectorsToCheck.length; i++) {
+
+        if (Selector.isMatch(selectorsToCheck[i].selector, name, attr)) {
+          const key = selectorsToCheck[i].string
 
           if (!map[key]) {
             map[key] = []
@@ -65,15 +85,32 @@ export function select(html: string, selectorStrings: string[]): IMap<string[]> 
     },
 
     ontext(text: string) {
+      if (isSkipped) {
+        return
+      }
+
+      // performance optimization
+      if (activeStates.size == 0) {
+        return
+      }
+
       for (const state of activeStates) {
         state.body += text
       }
     },
 
     onclosetag(name: string) {
+      if (isSkipped && (name == 'script' || name == 'style')) {
+        isSkipped = false
+      }
+
+      // performance optimization
+      if (activeStates.size == 0) {
+        return
+      }
+
       for (const state of activeStates) {
-        // const tag = Tag.make(name, {}, true)
-        state.body += Tag.toString(name, {})
+        state.body += Tag.toString(name, {}, true)
         state.level -= 1
 
         if (state.level < 1) {

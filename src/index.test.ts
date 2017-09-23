@@ -92,16 +92,16 @@ test('select performance', t => {
 
   const t0 = Date.now()
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     select(html, selectors)
   }
 
   const dt = Date.now() - t0
 
   t.is(
-    dt < 750,
+    dt < 400,
     true,
-    `Expected to select in less than 750ms, but took ${dt}ms.`
+    `Expected to select in less than 400ms, but took ${dt}ms.`
   )
 
 })

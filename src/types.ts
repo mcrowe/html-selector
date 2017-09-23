@@ -5,11 +5,4 @@ export interface ISelector {
 }
 
 
-export interface ITag {
-  name: string
-  attr: any
-  isClosing: boolean
-}
-
-
 export type IAttributes = any

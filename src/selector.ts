@@ -1,6 +1,5 @@
 import {
-  ISelector,
-  ITag
+  ISelector
 } from './types'
 
 
@@ -33,11 +32,11 @@ export function make(selectorString: string): ISelector {
 
 
 export function isMatch(selector: ISelector, name: string, attr: any): boolean {
-  if (selector.id && selector.id != attr.id) {
+  if (selector.id && attr && selector.id != attr.id) {
     return false
   }
 
-  if (selector.class && selector.class != attr.class) {
+  if (selector.class && attr && selector.class != attr.class) {
     return false
   }
 

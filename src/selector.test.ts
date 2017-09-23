@@ -1,6 +1,5 @@
 import test from 'ava'
 import { make, isMatch } from './selector'
-import * as Tag from './tag'
 
 
 test('make', t => {
@@ -36,7 +35,8 @@ test('isMatch', t => {
   t.is(
     isMatch(
       make('.blue'),
-      Tag.make('div', {class: 'blue'})
+      'div',
+      {class: 'blue'}
     ),
     true
   )
@@ -44,7 +44,8 @@ test('isMatch', t => {
   t.is(
     isMatch(
       make('span#one'),
-      Tag.make('div', {id: 'one'})
+      'div',
+      {id: 'one'}
     ),
     false
   )
@@ -52,7 +53,8 @@ test('isMatch', t => {
   t.is(
     isMatch(
       make('#one.green'),
-      Tag.make('div', {id: 'one', class: 'green'})
+      'div',
+      {id: 'one', class: 'green'}
     ),
     true
   )
